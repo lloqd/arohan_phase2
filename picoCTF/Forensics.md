@@ -14,7 +14,7 @@
 
 - Looking inside [program.deb](assets_forensics/program.deb), we see that it is the `steghide` package, so I install it on my system and try to extract the files using the passphrase `DUEDILIGENCE` as previously learnt.
 - Going through the pictures one by one, on invoking `steghide` on `picture3.bmp` we get the flag.
-  
+
   ![alt text](assets_forensics/image-2.png)
 ## Flag
 `picoCTF{h1dd3n_1n_pLa1n_51GHT_18375919}`
@@ -28,7 +28,7 @@
 from the moon.
 ## Solution:
 - Using the hint provided in the challenge, we learn that the protocol employed here is one used in the Apollo 11 mission.
-  
+
 ![alt text](assets_forensics/desc.png)
 
 - Searching it online, we find that pictures from the moon landing were transmitted over *SSTV* (Slow-Scan Television), for which multiple encoders exist online, using which we decode the audio file to obtain this image:
@@ -42,3 +42,6 @@ from the moon.
 - Spent a lot of time trying to recognize the audio file without the use of the included hint
 ## Resources:
 - https://sstv-decoder.mathieurenaud.fr/ka
+***
+# 3: tunn3l_v1s10n
+>
