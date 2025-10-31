@@ -69,7 +69,7 @@
 
 ## Notes:
 - Spent a lot of time learning about Jinja2 and SSTI in general, why the vulnerability exists and how it can be exploited.
-- Went on a wild goose chase with the payloads for a while 
+- Went on a wild goose chase with the payloads for a while
 ### Resources:
 - https://portswigger.net/research/server-side-template-injection#Identify
 - https://dojo-yeswehack.com/learn/vulnerabilities/jinja2
