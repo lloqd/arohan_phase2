@@ -43,5 +43,22 @@ Included file: [challenge.sal](assets_hardware/challenge.sal)
 # 3: Bare Metal Alchemist
 >
 ## Solution:
+- Running `file` on the included `firmware.elf` file, I find out that it's a ELF executable for the Atmel AVR, an 8-bit microcontroller, proceeding which I disassemble/decompile the file in Ghidra.
+
 ![](assets_hardware/file.png)
-![](assets_hardware/code.png)
+
+- Looking through `main()`, I discover XOR operations:
+    - Here, the program reads bytes from address `0x68`
+    - XORs each byte with `R11` (which was previously set to `0xa5`)
+- To reverse this, I go to the memory stored at `0x68`, copy it in hexadecimal, XOR it with `0xa5` again to get the original input, and convert it to ASCII to obtain the flag.
+
+![](assets_hardware/hex.png)
+
+- The script I used to get the flag:
+```
+encoded = bytes.fromhex("f1e3e6e6f1e3def1cd94d6fa94d6fad6cac896fad694c8d5c996fa91d7c1d094cbcafac394d7c8d291d7c0d800")
+flag = ''.join(chr(b ^ 0xa5) for b in encoded if b != 0 and b != 0xa5)
+print(flag)
+```
+## Flag:
+`TFCCTF{Th1s_1s_som3_s1mpl3_4rdu1no_f1rmw4re}`
