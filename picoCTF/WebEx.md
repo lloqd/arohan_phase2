@@ -65,7 +65,7 @@
 
 - Now, we simply do `cat flag`.
 
-![alt text](asset_webex/flag-ssti.png)
+![alt text](assets_webex/flag-ssti.png)
 
 ## Notes:
 - Spent a lot of time learning about Jinja2 and SSTI in general, why the vulnerability exists and how it can be exploited.
