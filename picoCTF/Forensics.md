@@ -1,5 +1,5 @@
 # 1. trivial flag transfer protocol
-> Figure out how they moved the [flag](tftp.pcapng).
+> Figure out how they moved the [flag](assets_forensics/tftp.pcapng).
 
 ## Solution:
 - The included file is a `pcapng` file, which can be opened in Wireshark.
@@ -41,7 +41,7 @@ from the moon.
 ### Incorrect tangents:
 - Spent a lot of time trying to recognize the audio file without the use of the included hint
 ## Resources:
-- https://sstv-decoder.mathieurenaud.fr/ka
+- https://sstv-decoder.mathieurenaud.fr
 ***
 # 3: tunn3l_v1s10n
 >

@@ -79,4 +79,45 @@
 # 3: Web Gauntlet
 > Can you beat the filters? Log in as admin http://shape-facility.picoctf.net:59342/ http://shape-facility.picoctf.net:59342/filter.php
 ## Solution:
-- We are told to log in as admin to the given website which has only a username and password field
+- We are told to log in as admin to the given website which has only a username and password field, and opening `filter.php` we see:
+```
+Round1: or
+```
+- This led me to believe that the challenge wants us to perform SQL injection, but the most common payload, i.e. `'OR '1' = 1'1;` is blocked by the filter, so we have to get creative.
+- First, I input a random test login combo.
+
+![](assets_webex/test.png)
+
+- Here, we can see what the sign in page actually runs in the background:
+```
+SELECT * FROM users WHERE username='{input}' AND password='{input}'
+```
+- So, with our payload, we have to bypass the password check since we have no way of knowing what it is, and I input `admin';--` and get through `Round 1`.
+- For `Round 2`, `filter.php` reads:
+```
+Round2: or and like = --
+```
+- The comment operator `--` is now blocked by the filter, however we can also use `/*` like in C to comment out the password check, and I craft the payload `admin';/*` which gets me to `Round 3`.
+- The filter for `Round 3` doesn't impact our payload so I run it again and get to `Round 4`, where we see:
+```
+Round4: or and = like > < -- admin
+```
+- From this round, we cannot directly input `admin` to the username field, and I think of bypassing this using some form of concatenation, which in SQL is the `||` operator, using which I craft the payload: `ad'||'min';/*`
+- Again, `Round 5`'s filter doen't hinder our current payload so we run it again:
+
+![](assets_webex/r5.png)
+
+- Going to `filter.php`, we see the source for the challenge and find the flag commented out at the end.
+
+![](assets_webex/filter-final.png)
+
+## Flag:
+`picoCTF{y0u_m4d3_1t_79a0ddc6}`
+
+## Notes:
+- Tried the standard `'OR '1' = '1';--` multiple times before reading `filter.php`
+- Spent a lot of time trying to figure out the syntax for SQLi properly
+### Resources:
+- https://portswigger.net/web-security/sql-injection/lab-login-bypass
+- https://www.w3schools.com/sql/sql_comments.asp
+- https://www.geeksforgeeks.org/sql/sql-concatenation-operator/
