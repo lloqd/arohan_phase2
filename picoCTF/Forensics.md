@@ -44,4 +44,22 @@ from the moon.
 - https://sstv-decoder.mathieurenaud.fr
 ***
 # 3: tunn3l_v1s10n
->
+> We found this [file](https://mercury.picoctf.net/static/01be2b38ba97802285a451b94505ea75/tunn3l_v1s10n). Recover the flag.
+## Solution:
+- We open the file in a hex editor and observe it's magic bytes to find that it's a `.bmp` file, or a bitmap file, however it's header is corrupted and does not follow the standard format for a bitmap header.
+- I try opening the file in `GIMP`, which works but is relatively useless.
+
+![](assets_forensics/gimp.png)
+
+- The image looks like it's cut off from the top, so I adjust the height through hex editing and get the flag.
+
+![](assets_forensics/fixed.png)
+
+## Flag:
+`picoCTF{qu1t3_a_v13w_2020}`
+## Notes:
+- Reading up on the bitmap file header took quite some time and I still couldn't completely correct the image, but the flag is visible so..
+### Resources:
+- https://hexed.it/
+- https://en.wikipedia.org/wiki/BMP_file_format#Bitmap_file_header
+- https://www.artwork.com/gerber/vlbv/faq/bmp_header.gif

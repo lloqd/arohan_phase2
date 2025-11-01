@@ -43,3 +43,5 @@ Included file: [challenge.sal](assets_hardware/challenge.sal)
 # 3: Bare Metal Alchemist
 >
 ## Solution:
+![](assets_hardware/file.png)
+![](assets_hardware/code.png)
