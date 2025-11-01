@@ -69,3 +69,27 @@ print(flag)
 ## Flag:
 `picoCTF{custom_d2cr0pt6d_dc499538}`
 ***
+# 3: RSA Oracle
+> Can you abuse the oracle? An attacker was able to intercept communications between a bank and a fintech company. They managed to get the [message](https://artifacts.picoctf.net/c_titan/149/secret.enc) (ciphertext) and the [password](https://artifacts.picoctf.net/c_titan/149/password.enc) that was used to encrypt the message. After some intensive reconassainance they found out that the bank has an oracle that was used to encrypt the password and can be found here `nc titan.picoctf.net 59080`. Decrypt the password and use it to decrypt the message. The oracle can decrypt anything except the password.
+## Solution:
+- As mentioned in the hints, we know that we must use a "Known Plaintext Attack" and that we must take advantage of the RSA algorithm by sending a custom crafted message to the oracle.
+- the RSA algorithm is: `C = m^e mod n`, where e is the public exponent - which is most commonly 65537 and n is the modulus - which is typically a 2048 bit prime number.
+- On establishing the `nc` to the oracle, we are greeted with a menu where the user can either send a character to be encrypted or decrypted. Here, we will send 1, which the program converts to its hex value `31`, and then encrypts to give:
+```
+4374671741411819653095065203638363839705760144524191633605358134684143978321095859047126585649272872908765432040943055399247499744070371810470682366100689
+```
+
+![](assets_crypto/oracle1.png)
+
+- Now, using the *homomorphic* property of RSA encryption, which basically means that `RSA(a) x RSA (b) = RSA(a*b)`, we can multiply the obtained ciphertext from encrypting `1`, multiply it with our `password.enc`, and have the oracle decrypt it for us!
+
+![](assets_crypto/decrypt.png)
+
+- Now, we simply divide this by the hex value for `1`, (`0x31`), and obtain the password by converting it to ASCII, which we get as `3319c`.
+
+- Finally, using the OpenSSL hint, we decrypt `secret.enc` and obtain the flag.
+
+![](assets_crypto/finalf.png)
+
+## Flag:
+`picoCTF{su((3ss_(r@ck1ng_r3@_3319c817}`
