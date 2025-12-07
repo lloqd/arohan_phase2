@@ -126,6 +126,7 @@ Now, if the first entry is NOT 2, we iterate through this `for` loop, where `iVa
 ## 3. performative
 ## Solution:
 We start by running `checksec`: 
+
 ![](assets_binex/p-checksec.png)
 
 Since PIE (Position Independent Executable) is disabled, it means the function addresses will remain fixed during execution.
@@ -140,6 +141,7 @@ From the decomp, we know that `v2` is located at `[rbp-0x28]`.
 However, to reach the return address, we need to fill the 32-byte buffer + overwrite the 8-byte saved RBP.
 
 Since PIE is off, we use `gdb` to find the address of `win()`:
+
 ![](assets_binex/p-win.png)
 
 Finally, we construct a script using `pwntools`:
@@ -165,6 +167,7 @@ p.interactive()
 This challenge is pretty similar to the last one, with the only difference being I use a `RET gadget` instead of adding 8 bytes to the offset.
 
 Running `checksec` (no PIE again):
+
 ![](assets_binex/m-checksec.png)
 
 This time, we get to see `gets()`, which is famously unsafe for not checking bounds on user inputs, and hence leading to _buffer overflows_ -- here, line 95 has `gets(&v0)`.
@@ -173,9 +176,11 @@ This time, we get to see `gets()`, which is famously unsafe for not checking bou
 We can see that `v0` is located at `[bp-0x48]` which translates to 72 bytes to reach the return address.
 
 Using `gdb` to find the address of `win()`:
+
 ![](assets_binex/m-win.png)
 
 Finally, we construct a script (using a RET gadget here to fix stack alignment problems which we found the address for using `objdump`)
+
 ![](assets_binex/m-obj.png)
 
 script:
