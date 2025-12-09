@@ -326,3 +326,90 @@ print(flag)
 `DawgCTF{4LL_RU57_N0_C4R!}`
 ***
 # 5. JoyDivision
+[Decompiling](assets_reveng/jd-decomp.c) the given binary with *angr*, we see:
+1) The program reads data from `palatinepackflag.txt` into a buffer `v5`.
+2) The function `flipBits` is called and `v5` is passed through.
+3) `expand` is called consecutively, after each call the previous output is passed to the next, this goes on three times.
+4) Finally, the obfuscated flag is passed to `flag.txt`.
+
+There also exists functions `rotate_block_left`, `rotate_block_right`, `doWeirdStuff` and `teehee` but they are never called in `main()` and hence will be ignored. 
+
+To reverse this, we first need to analyze `flipBits` and `extend`.
+
+### flipBits
+```
+void flipBits(char *a0, unsigned int a1)
+{
+    char v0;  // [bp-0x11]
+    unsigned int v1;  // [bp-0x10]
+    unsigned int v2;  // [bp-0xc]
+
+    v1 = 0;
+    v0 = 105;
+    for (v2 = 0; v2 < a1; v2 += 1){
+        if (!v1)
+            a0[v2] = ~(a0[v2]);
+        else{
+            a0[v2] = a0[v2] ^ v0;
+            v0 += 32;
+        }
+        v1 = !v1;
+    }
+    return;
+}
+```
+Here, every `even` byte has a bitwise `NOT` applied to it and every `odd` byte has a `XOR` applied, with a rolling key that starts at 105 and increments by 32.
+
+### expand
+This function runs a iterates through every byte, and depending on the value of `v3`, will pick through 6 different operations to apply. However, at the beginning of every loop, `v3` is hardcoded to be 1, hence only one of two cases will ever be executed.
+
+```c
+if (!v1) {
+    *((char *)(v4 + v2 * 2)) = a0[v2] & 0xfffffff0 | v0 >> 4;
+    *((char *)(v4 + v2 * 2 + 1)) = a0[v2] & 15 | v0 * 16;
+} else {
+    *((char *)(v4 + v2 * 2)) = a0[v2] & 15 | v0 * 16;
+    *((char *)(v4 + v2 * 2 + 1)) = a0[v2] & 0xfffffff0 | v0 >> 4;
+}
+```
+
+For every alternate byte, one of the two operations will be invoked since the value of `v1` toggles at the end of every loop iteration.
+
+To expand the size of the input, the function splits it into two "nibbles" (4 byte chunks) and fills the rest with noise using operations on `v0`.
+
+Finally, to reverse `flag.txt` and obtain the flag, we need to "shrink" the bytes 3 times and reverse `flipBits` and to do this I constructed the following script:
+
+```python
+def de_expand(arr):
+    result = bytearray(len(arr) // 2)
+    toggle = False
+
+    for i in range(len(result)):
+        b1, b2 = arr[2 * i], arr[2 * i + 1]
+        result[i] = (b1 & 0xF0 | b2 & 0x0F) if toggle else (b1 & 0x0F | b2 & 0xF0)
+        toggle = not toggle
+
+    return result
+
+def de_flipbits(arr):
+    toggle = False
+    xor_key = 105
+
+    for i in range(len(arr)):
+        if toggle:
+            arr[i] ^= xor_key
+            xor_key = (xor_key + 32) % 256
+        else:
+            arr[i] = ~arr[i] & 0xFF
+        toggle = not toggle
+
+    return arr
+
+flag = bytearray(open("flag.txt", "rb").read())
+flag = de_expand(de_expand(de_expand(flag)))
+flag = de_flipbits(flag)
+print(flag.decode())
+```
+
+## Flag:
+`sunshine{C3A5ER_CR055ED_TH3_RUB1C0N}`

@@ -17,12 +17,12 @@
 ***
 # 3. performative
 ## Solution:
-1) checksec annol -> no PIE (fixed addresses)
+1) checksec -> no PIE (fixed addresses)
 2) `dogbolt.org` -> `main()` has `v2[32]` which can be overwritten because `scanf("%s")` won't check buffer size
 3) need to call `win()` which calls `printFlag()`
 4) decomp tells us that v2 starts at [bp-0x28] and goes till [bp-0x8] because 32 bytes + we overwrite saved RBP by sending 8 bytes more
 5) `gdb` -> `p win` -> `0x401275`
-6) script off one payload -> gg ez
+6) script -> payload -> gg ez
 ```
 from pwn import *
 
@@ -35,11 +35,11 @@ p.interactive()
 ***
 # 4. Property in Manipal
 ## Solution:
-1) checksec annol -> no PIE (fixed addresses)
-2) `dogbolt.org` -> `vuln())` has `gets(&v0)` which doesn't check buffer annol
+1) checksec  -> no PIE (fixed addresses)
+2) `dogbolt.org` -> `vuln())` has `gets(&v0)` which doesn't check buffer 
 3) v0 is at `[bp-0x48]` -> 72 bytes + blab about ret
 4) `gdb` -> `p win` -> `0x401196`
-6) script off one payload -> gg ez
+6) script -> payload -> gg ez
 ```
 from pwn import *
 

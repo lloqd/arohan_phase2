@@ -26,4 +26,6 @@
 4) we somehow need to render ts
 5) flag: `byuctf{android_piece_0f_c4ke}`
 ***
-# 4. JoyDivision
+# 4. Dusty
+This challenge contains 3 binaries, `dust_noob`, `dust_intermediate`, and `dust_pro`. Going in order:
+# Dusty
